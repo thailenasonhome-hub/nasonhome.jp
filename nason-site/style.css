@@ -147,8 +147,11 @@ section:last-of-type .jigyo-detail{border-bottom:0}
 .jigyo-list li:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--teal);flex:none;margin-top:.5rem}
 
 /* cards (featured) */
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;transition:.2s}
+.cards{display:flex;gap:24px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:8px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.cards::-webkit-scrollbar{height:8px}
+.cards::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}
+.cards::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;transition:.2s;flex:0 0 320px;scroll-snap-align:start}
 .card:hover{box-shadow:var(--sh-lg);transform:translateY(-5px)}
 .card .ph{aspect-ratio:16/10}
 .card-pos{position:relative}
@@ -207,6 +210,7 @@ section:last-of-type .jigyo-detail{border-bottom:0}
 .rinen-row{display:grid;grid-template-columns:1fr 340px;gap:44px;align-items:start}
 .rinen-photos{position:sticky;top:calc(var(--header-h, 90px) + 24px);display:flex;flex-direction:column;gap:16px}
 .rinen-photo{width:100%;height:auto;border-radius:var(--r-lg);box-shadow:var(--sh-lg);display:block}
+.full-img-below{width:100%;height:auto;border-radius:var(--r-lg);box-shadow:var(--sh-lg);display:block;margin-top:2rem}
 
 /* 強みと実績 — ảnh banner rộng giữa đoạn mở đầu và danh sách thế mạnh */
 .tsuyomi-banner{width:100%;height:auto;border-radius:var(--r-lg);box-shadow:var(--sh);display:block;margin:1.6rem 0}
@@ -336,10 +340,11 @@ footer{background:linear-gradient(135deg,#3B7BC4,#1F4BA7);color:#FFFFFF;padding:
   .rinen-photos .rinen-photo{flex:1}
 }
 @media(max-width:720px){
-  .nav,.hdr-right .lang{display:none}
+  .nav{display:none}
+  .hdr-right{display:contents}
+  .hdr-right .lang{display:flex!important;order:2}
+  .burger{display:block;order:1}
   .hdr-cta-group{display:none!important}
-  .burger{display:block}
-  .cards{grid-template-columns:1fr}
   .why-grid{grid-template-columns:1fr}
   .strength-grid{grid-template-columns:1fr 1fr}
   .form-grid{grid-template-columns:1fr}
