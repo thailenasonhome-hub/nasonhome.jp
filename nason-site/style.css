@@ -284,6 +284,8 @@ section:last-of-type .jigyo-detail{border-bottom:0}
 .form-field textarea{resize:vertical;min-height:100px}
 .form-check{display:flex;align-items:flex-start;gap:.6rem;font-size:.84rem;color:var(--body);margin-bottom:1.2rem}
 .form-check input{margin-top:3px}
+.form-error{margin:0 0 1rem;padding:.75rem 1rem;background:var(--coral-soft);border:1px solid var(--coral);border-radius:var(--r-sm);color:var(--coral);font-size:.84rem;line-height:1.5}
+.form-error[hidden]{display:none}
 .form-success{display:none;text-align:center;padding:40px 10px}
 .form-success.show{display:block}
 .form-success .fi{width:56px;height:56px;border-radius:50%;background:var(--teal-soft);color:var(--teal);display:grid;place-items:center;margin:0 auto 1rem}

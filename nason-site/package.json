@@ -1,0 +1,16 @@
+{
+  "name": "nason-home-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "NASON HOME production website (static site + contact form serverless function).",
+  "scripts": {
+    "build": "node --check api/contact.js && node -e \"console.log('Static site — no build step; serverless function syntax OK.')\""
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "resend": "^6.17.2"
+  }
+}

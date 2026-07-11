@@ -61,7 +61,7 @@ const I18N={
     "cf.title":"Liên hệ tư vấn miễn phí","cf.sub":"Hỗ trợ tiếng Việt, Nhật, Anh. Tư vấn hoàn toàn miễn phí.","cf.tel":" · Điện thoại","cf.email":" · Email","cf.office":" · Văn phòng",
     "cf.name":"Họ tên","cf.email2":"Email","cf.phone":"Số điện thoại","cf.type":"Loại yêu cầu","cf.type.rent":"Về thuê nhà","cf.type.buy":"Về mua bán","cf.type.invest":"Về đầu tư","cf.type.recruit":"Về tuyển dụng","cf.type.other":"Khác",
     "cf.lang":"Ngôn ngữ mong muốn","cf.msg":"Nội dung liên hệ","cf.privacy":"Tôi đồng ý với chính sách bảo mật","cf.submit":"Gửi liên hệ",
-    "cf.demo":"※ Đây là màn hình demo, chưa thực sự gửi đi. Sẽ kết nối server khi triển khai thật.","cf.thanksTitle":"Cảm ơn bạn đã liên hệ","cf.thanksBody":"Chúng tôi sẽ liên hệ lại sớm (đây là demo, chưa thực sự gửi đi).",
+    "cf.thanksTitle":"Cảm ơn bạn đã liên hệ","cf.thanksBody":"Nhân viên của chúng tôi sẽ liên hệ lại với bạn trong thời gian sớm nhất.",
     "map.label":"Trụ sở chính","map.eyebrow":"CHỈ ĐƯỜNG","map.title":"Thông tin văn phòng","map.name":"Công ty NASON HOME","map.fax":" / FAX 050-3174-7985","map.hours":"Giờ làm việc","map.hoursFill":"Sắp cập nhật",
     "foot.tag":"Tìm nhà ở Nhật, không rào cản ngôn ngữ.","foot.service":"Dịch vụ","foot.company":"Công ty","foot.more":"Khác"
   },
@@ -124,7 +124,7 @@ const I18N={
     "cf.title":"Get in touch — free consultation","cf.sub":"Vietnamese, Japanese and English supported. Consultation is free.","cf.tel":" · Phone","cf.email":" · Email","cf.office":" · Office",
     "cf.name":"Name","cf.email2":"Email","cf.phone":"Phone","cf.type":"Inquiry type","cf.type.rent":"Renting","cf.type.buy":"Buying/selling","cf.type.invest":"Investment","cf.type.recruit":"Careers","cf.type.other":"Other",
     "cf.lang":"Preferred language","cf.msg":"Message","cf.privacy":"I agree to the privacy policy","cf.submit":"Send",
-    "cf.demo":"※ Demo screen — not actually sent. Will connect to a server in production.","cf.thanksTitle":"Thanks for reaching out","cf.thanksBody":"We'll get back to you soon (demo only — nothing was actually sent).",
+    "cf.thanksTitle":"Thanks for reaching out","cf.thanksBody":"Our team will get back to you shortly.",
     "map.label":"Head Office","map.eyebrow":"ACCESS","map.title":"Office information","map.name":"NASON HOME Co., Ltd.","map.fax":" / FAX 050-3174-7985","map.hours":"Business hours","map.hoursFill":"Coming soon",
     "foot.tag":"Finding a home in Japan, without the language barrier.","foot.service":"Services","foot.company":"Company","foot.more":"More"
   }
@@ -207,12 +207,64 @@ document.querySelectorAll('.m-acc>button').forEach(b=>b.addEventListener('click'
 const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.1});
 document.querySelectorAll('.rv').forEach(el=>io.observe(el));
 
-/* contact form — demo only, does not actually send anywhere (only present on contact.html) */
+/* contact form — sends via the /api/contact serverless function (only present on contact.html) */
 const contactForm = document.getElementById('contactForm');
 if(contactForm){
-  contactForm.addEventListener('submit', function(e){
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const FORM_MSG = {
+    ja:{ sending:'送信中…', error:'送信に失敗しました。時間をおいて再度お試しください。', invalid:'必須項目（お名前・メールアドレス・お問い合わせ内容・同意）をご確認ください。' },
+    vi:{ sending:'Đang gửi…', error:'Gửi không thành công. Vui lòng thử lại sau.', invalid:'Vui lòng kiểm tra các mục bắt buộc (họ tên, email, nội dung, đồng ý).' },
+    en:{ sending:'Sending…', error:'Failed to send. Please try again later.', invalid:'Please check the required fields (name, email, message, consent).' }
+  };
+  const msg = (k)=> (FORM_MSG[document.documentElement.lang]||FORM_MSG.ja)[k];
+  const errorBox = document.getElementById('formError');
+  const submitBtn = contactForm.querySelector('button[type="submit"]');
+
+  const showError = (text)=>{ if(errorBox){ errorBox.textContent = text; errorBox.hidden = false; } };
+  const clearError = ()=>{ if(errorBox){ errorBox.hidden = true; errorBox.textContent=''; } };
+
+  contactForm.addEventListener('submit', async function(e){
     e.preventDefault();
-    this.style.display='none';
-    document.getElementById('formSuccess').classList.add('show');
+    clearError();
+
+    const f = this.elements;
+    const payload = {
+      name:(f.name.value||'').trim(),
+      email:(f.email.value||'').trim(),
+      phone:(f.phone.value||'').trim(),
+      type:f.type.value,
+      language:f.language.value,
+      message:(f.message.value||'').trim(),
+      privacy:f.privacy.checked
+    };
+
+    // Client-side validation (mirrors the server; never the only check).
+    if(!payload.name || !EMAIL_RE.test(payload.email) || !payload.message || !payload.privacy){
+      showError(msg('invalid'));
+      return;
+    }
+
+    const originalLabel = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = msg('sending');
+
+    try{
+      const res = await fetch('/api/contact', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body:JSON.stringify(payload)
+      });
+      if(!res.ok) throw new Error('Request failed: '+res.status);
+
+      // Success — reset input and reveal the thank-you panel.
+      this.reset();
+      this.style.display='none';
+      document.getElementById('formSuccess').classList.add('show');
+    }catch(err){
+      // Failure — keep the user's input, re-enable the button, show the error.
+      showError(msg('error'));
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalLabel;
+    }
   });
 }
