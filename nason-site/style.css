@@ -81,6 +81,20 @@ section{padding:76px 0}
 .nav>a:hover,.drop>button:hover{color:var(--blue);background:rgba(37,99,235,.06)}
 .nav>a.active{background:#fff;color:var(--blue);box-shadow:var(--sh-sm)}
 .hdr-right{display:flex;align-items:center;gap:.7rem}
+.hdr-socials{display:flex;align-items:center;gap:12px}
+.hdr-socials a{display:flex;align-items:center;justify-content:center;width:19px;height:19px;transition:transform .25s ease,opacity .25s ease}
+.hdr-socials a:hover{transform:scale(1.12);opacity:.85}
+.hdr-socials a.ico-fb{color:#1877F2}
+.hdr-socials a.ico-tt{color:#111111}
+.hdr-socials a.ico-x{color:#111111}
+.hdr-socials a.ico-ig{color:#E1306C}
+.m-socials{display:flex;align-items:center;justify-content:center;gap:12px;margin:1rem 0}
+.m-socials a{display:flex;align-items:center;justify-content:center;width:20px;height:20px;transition:transform .25s ease,opacity .25s ease}
+.m-socials a:hover{transform:scale(1.12);opacity:.85}
+.m-socials a.ico-fb{color:#1877F2}
+.m-socials a.ico-tt{color:#111111}
+.m-socials a.ico-x{color:#111111}
+.m-socials a.ico-ig{color:#E1306C}
 .lang{display:flex;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:3px;flex:none}
 .lang button{border:0;background:none;font-size:.72rem;font-weight:700;letter-spacing:.03em;color:var(--muted);padding:.32rem .6rem;border-radius:999px;cursor:pointer;transition:.15s}
 .lang button.on{background:var(--navy);color:#fff}
@@ -284,8 +298,6 @@ section:last-of-type .jigyo-detail{border-bottom:0}
 .form-field textarea{resize:vertical;min-height:100px}
 .form-check{display:flex;align-items:flex-start;gap:.6rem;font-size:.84rem;color:var(--body);margin-bottom:1.2rem}
 .form-check input{margin-top:3px}
-.form-error{margin:0 0 1rem;padding:.75rem 1rem;background:var(--coral-soft);border:1px solid var(--coral);border-radius:var(--r-sm);color:var(--coral);font-size:.84rem;line-height:1.5}
-.form-error[hidden]{display:none}
 .form-success{display:none;text-align:center;padding:40px 10px}
 .form-success.show{display:block}
 .form-success .fi{width:56px;height:56px;border-radius:50%;background:var(--teal-soft);color:var(--teal);display:grid;place-items:center;margin:0 auto 1rem}
